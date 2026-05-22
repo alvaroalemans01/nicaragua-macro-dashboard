@@ -91,6 +91,10 @@ See [`docs/methodology.md`](docs/methodology.md) and [`docs/dax_patterns.md`](do
 ---
 
 ## Screenshots
+<img width="1365" height="544" alt="image" src="https://github.com/user-attachments/assets/96778a38-510f-4aad-9c09-8ed6bdccf2c1" />
+<img width="1365" height="715" alt="image" src="https://github.com/user-attachments/assets/b40cf0ce-5812-4824-9f57-762a94511bc9" />
+<img width="1365" height="719" alt="image" src="https://github.com/user-attachments/assets/bec67e3d-8f94-4b02-abdd-aba88670841b" />
+
 
 *Coming soon — dashboard export pending completion of H4 and H5.*
 
