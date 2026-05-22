@@ -46,7 +46,7 @@ BEGIN
         BEGIN TRAN;
 
         --------------------------------------------------------------------
-        -- 1. Limpiar staging físico
+        -- 1. Limpiar staging fÃ­sico
         --    La staging solo debe contener la carga actual del archivo raw.
         --------------------------------------------------------------------
         TRUNCATE TABLE dbo.staging_agg_monetarios;
@@ -121,7 +121,7 @@ BEGIN
             SELECT
                 RowID,
 
-                -- Detectar filas que contienen año.
+                -- Detectar filas que contienen aÃ±o.
                 CASE 
                     WHEN LEN(TRIM(anio_mes)) >= 4 
                          AND ISNUMERIC(LEFT(TRIM(anio_mes), 4)) = 1
@@ -241,7 +241,7 @@ BEGIN
 
         estacion_6_final AS (
             -- Defensa adicional por si el archivo trae alguna fecha duplicada.
-            -- Para una serie mensual debería haber una única fila por fecha.
+            -- Para una serie mensual deberÃ­a haber una Ãºnica fila por fecha.
             SELECT
                 fecha,
                 MAX(base_monetaria) AS base_monetaria,
@@ -336,7 +336,7 @@ BEGIN
             SELECT
                 RowID,
 
-                -- Detecta filas que contienen años.
+                -- Detecta filas que contienen aÃ±os.
                 -- Ejemplo: '2011', '2012', '2026'
                 CASE 
                     WHEN LEN(TRIM(anio_mes)) >= 4 
@@ -366,15 +366,15 @@ BEGIN
                 dep_nores,
                 m3,
                 m3a
-            FROM dbo.staging_agg_monetarios_backup   -- CAMBIA AQUÍ si tu tabla tiene otro nombre
+            FROM dbo.staging_agg_monetarios_backup   -- CAMBIA AQUÃ si tu tabla tiene otro nombre
             WHERE anio_mes IS NOT NULL
         ),
 
         estacion_2_agrupacion AS (
             SELECT 
                 *,
-                -- Crea un grupo acumulado cada vez que aparece un nuevo año.
-                -- Esto permite asociar los meses siguientes con su año correspondiente.
+                -- Crea un grupo acumulado cada vez que aparece un nuevo aÃ±o.
+                -- Esto permite asociar los meses siguientes con su aÃ±o correspondiente.
                 COUNT(anio_detectado) OVER(ORDER BY RowID) AS grupo_anio
             FROM estacion_1_categorizacion
         ),
@@ -382,7 +382,7 @@ BEGIN
         estacion_3_filldown AS (
             SELECT 
                 *,
-                -- Rellena el año hacia abajo dentro de cada grupo.
+                -- Rellena el aÃ±o hacia abajo dentro de cada grupo.
                 -- Ejemplo:
                 -- 2026
                 -- Enero   -> 2026
@@ -394,7 +394,7 @@ BEGIN
         estacion_4_limpieza_y_fechas AS ( 
             SELECT 
                 *,
-                -- Convierte el nombre del mes a número de mes.
+                -- Convierte el nombre del mes a nÃºmero de mes.
                 CASE 
                     WHEN mes_detectado LIKE 'Enero%'      THEN 1 
                     WHEN mes_detectado LIKE 'Febrero%'    THEN 2 
@@ -416,14 +416,14 @@ BEGIN
 
         estacion_5_columnas_limpias AS (
             SELECT 
-                -- Construye fecha mensual estándar.
+                -- Construye fecha mensual estÃ¡ndar.
                 DATEFROMPARTS(CAST(anio_real AS INT), numero_mes, 1) AS fecha,
 
-                -- Limpieza numérica:
+                -- Limpieza numÃ©rica:
                 -- 1. TRIM elimina espacios.
                 -- 2. REPLACE elimina separador de miles.
-                -- 3. TRY_CAST convierte texto a número.
-                -- 4. Si el valor viene entre paréntesis, se interpreta como negativo.
+                -- 3. TRY_CAST convierte texto a nÃºmero.
+                -- 4. Si el valor viene entre parÃ©ntesis, se interpreta como negativo.
 
                 CASE 
                     WHEN TRIM(base_mon) LIKE '(%)'
