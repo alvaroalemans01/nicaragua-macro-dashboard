@@ -59,3 +59,4 @@ Station 6 — Deduplicación
 - `vw_inflacion_usa` uses a **self-join** (`LEFT JOIN CPI_USA AS previo ON previo.fecha = DATEADD(YEAR, -1, actual.fecha)`) to handle the missing Oct–Nov 2025 CPI data. Do not replace with LAG(12) — LAG breaks when there are gaps in the series.
 - `vw_tipo_cambio_real` uses **CROSS JOIN** to project scalar base-year constants (IPC Jan 2011, CPI Jan 2011) across the full time series — avoids correlated subqueries in the SELECT clause.
 - Percentage columns in `Tasas_Interes_BCN` store rates as integers (e.g., `4.06` for 4.06%). DAX measures apply `/100` where needed. Normalization in SQL is pending.
+- Raw Data files are available at https://www.bcn.gob.ni/ and https://www.secmca.org/secmcadatos/
