@@ -1,6 +1,6 @@
 # DAX Patterns — Guía de Arquitectura de Medidas
 
-Este documento no lista todas las medidas del modelo (son 99). Documenta los **4 patrones arquitectónicos** que resuelven problemas reales de Power BI y se reutilizan consistentemente en todo el dashboard.
+Este documento no lista todas las medidas del modelo. Documenta los **3 patrones arquitectónicos** que resuelven problemas reales de Power BI y se reutilizan consistentemente en todo el dashboard.
 
 ---
 
@@ -32,42 +32,7 @@ RETURN CALCULATE(
 
 ---
 
-## Patrón 2 — Centrado en Umbral (Zone Centering)
-
-**Problema**: Power BI dibuja áreas de zona siempre desde el baseline de 0. Si el umbral de alerta está en 75% y el valor está en 78%, el área "de riesgo" no parte del 75% — parte del 0%, saturando el visual y perdiendo la lectura.
-
-**Solución**: Restar el umbral a la serie principal. El eje queda centrado en 0 = umbral. Las zonas se dibujan simétricamente alrededor del punto de interés.
-
-```dax
--- Ejemplo: LDR con umbral en 75%
-LDR_vs_Umbral = [LDR_Serie] - 0.75
-
--- Zona de eficiencia: activa cuando LDR está SOBRE el umbral
-LDR_Zona_Eficiente_v2 =
-VAR _ldr = [LDR_Serie]
-RETURN IF(_ldr >= 0.75 AND _ldr <= 0.85, _ldr - 0.75, BLANK())
-
--- Zona de riesgo: activa cuando LDR está SOBRE 85%
-LDR_Zona_Riesgo_v2 =
-VAR _ldr = [LDR_Serie]
-RETURN IF(_ldr > 0.85, _ldr - 0.75, BLANK())
-```
-
-**El mismo patrón aplicado a Brecha PPA** (umbral = 0):
-```dax
--- La brecha ya está centrada en 0 por definición (NIC - desl - USA)
-Brecha_PPA_Zona_Presion =
-IF([Brecha_PPA_Serie] > 0, [Brecha_PPA_Serie], BLANK())
-
-Brecha_PPA_Zona_Deflacion =
-IF([Brecha_PPA_Serie] < 0, [Brecha_PPA_Serie], BLANK())
-```
-
-**Medidas que usan este patrón**: `LDR_vs_Umbral`, `LDR_Zona_Eficiente_v2`, `LDR_Zona_Riesgo_v2`, `Brecha_PPA_Zona_Presion`, `Brecha_PPA_Zona_Deflacion`, `IMAE_Zona_Expansion`, `IMAE_Zona_Contraccion`.
-
----
-
-## Patrón 3 — Buffer Visual (Near-Miss Storytelling)
+## Patrón 2 — Buffer Visual (Near-Miss Storytelling)
 
 **Problema**: El peso del SPNF en el crédito total nunca cruzó el umbral del 20%, por lo que una zona que se activa "cuando supera el umbral" queda vacía toda la serie. La historia es el *acercamiento* al umbral, no el cruce.
 
@@ -85,7 +50,7 @@ RETURN IF(NOT ISBLANK(_peso), 0.20 - _peso, BLANK())
 
 ---
 
-## Patrón 4 — Estado Semáforo vía Medida Numérica
+## Patrón 3 — Estado Semáforo vía Medida Numérica
 
 **Problema**: El formato condicional en Power BI no acepta medidas de texto directamente como regla de color. Se necesita un valor numérico que mapee a un color.
 
