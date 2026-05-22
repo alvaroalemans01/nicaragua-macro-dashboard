@@ -1,7 +1,7 @@
 SELECT * 
 FROM BM
 
-/* Proceso de creación de vista master */
+/* Proceso de creaciÃ³n de vista master */
 SELECT i.fecha, b.Base_Monetaria, I.TasaPromedio, C.Credito, IM.IMAE, ipc.IPC, r.RIN, tc.TC, t.TRM
 FROM inflacion AS i
 LEFT JOIN BM AS B
@@ -85,7 +85,7 @@ FROM BM
 
 SELECT @@SERVERNAME
 
-/*Comparación del promedio de inflación por año vs año más alto (2022)*/
+/*ComparaciÃ³n del promedio de inflaciÃ³n por aÃ±o vs aÃ±o mÃ¡s alto (2022)*/
 WITH YearlyStats AS (
  SELECT
  YEAR(fecha) AS anio,
@@ -108,7 +108,7 @@ SELECT * FROM vw_macroeconomico
 
 SELECT * FROM tasa_interbancaria;
 
-/*Creación de view Spread Bancario*/
+/*CreaciÃ³n de view Spread Bancario*/
 WITH tasas_por_plazo AS (
 SELECT 
  Fecha,
@@ -191,7 +191,7 @@ SELECT
  ON tp.fecha = ma.fecha
  ORDER BY fecha, moneda
 
- /* Creamos la view para la tasa real de colocación */
+ /* Creamos la view para la tasa real de colocaciÃ³n */
 CREATE VIEW vw_Tasa_Real_Colocacion AS 
  WITH tasas_por_plazo AS (
 SELECT 
@@ -340,7 +340,7 @@ WITH unificacion_tasas AS (
  moneda,
  (tasa - trm) AS gap_transmision,
  (LAG(trm, 1) OVER(PARTITION BY moneda ORDER BY fecha)) AS TRM_mes_anterior,
- (CASE WHEN gap_transmision <= 0.5 THEN 'Transmisión Efectiva' ELSE 'Desvío de Política' END) AS efectividad
+ (CASE WHEN gap_transmision <= 0.5 THEN 'TransmisiÃ³n Efectiva' ELSE 'DesvÃ­o de PolÃ­tica' END) AS efectividad
  FROM unificacion_tasas
  ORDER BY fecha ASC;
 
@@ -370,8 +370,8 @@ WITH unificacion_tasas AS (
  gap_transmision,
  TRM_mes_anterior,
  CASE
-      WHEN gap_transmision <= 0.5 THEN 'Transmisión Efectiva'
-	  ELSE 'Desvío de Política' END AS Estado_Efectividad
+      WHEN gap_transmision <= 0.5 THEN 'TransmisiÃ³n Efectiva'
+	  ELSE 'DesvÃ­o de PolÃ­tica' END AS Estado_Efectividad
  FROM calculo_gap
  WHERE TRM_mes_anterior IS NOT NULL
  ORDER BY fecha DESC;
@@ -422,7 +422,7 @@ deslizamiento_previo,
 brecha_deslizamiento,
 CASE 
      WHEN brecha_deslizamiento <= 1.5 THEN 'Anclaje Exitoso'
-	 WHEN brecha_deslizamiento > 1.5 AND brecha_deslizamiento <= 4 THEN 'Presión por Costos Importados'
+	 WHEN brecha_deslizamiento > 1.5 AND brecha_deslizamiento <= 4 THEN 'PresiÃ³n por Costos Importados'
 	 WHEN brecha_deslizamiento > 4 THEN 'Desalineamiento / Shock Estructural'
 	 END AS estado_anclaje_cambiario
 FROM calculo_deslizamiento_previo
@@ -464,11 +464,11 @@ plazo NVARCHAR(50),
 tasa_porcentaje FLOAT 
 );
 
--- (Opcional) Limpia la tabla destino por si ya tenía datos de pruebas
+-- (Opcional) Limpia la tabla destino por si ya tenÃ­a datos de pruebas
 TRUNCATE TABLE tasas_Interes_BCN;
 GO
 
--- Inicia la línea de ensamblaje (Nota el punto y coma inicial)
+-- Inicia la lÃ­nea de ensamblaje (Nota el punto y coma inicial)
 ;WITH Estacion_1_Categorizacion AS (
     SELECT 
         RowID,
@@ -511,8 +511,8 @@ CROSS APPLY (
         ('MN', 'Pasiva', '3 meses',     f.MN_Pasiva_3m),
         ('MN', 'Pasiva', '6 meses',     f.MN_Pasiva_6m),
         ('MN', 'Pasiva', '9 meses',     f.MN_Pasiva_9m),
-        ('MN', 'Pasiva', '1 año',       f.mn_pasiva_1y),
-        ('MN', 'Pasiva', 'Más de 1 año',f.MN_Pasiva_Mas1y),
+        ('MN', 'Pasiva', '1 aÃ±o',       f.mn_pasiva_1y),
+        ('MN', 'Pasiva', 'MÃ¡s de 1 aÃ±o',f.MN_Pasiva_Mas1y),
         ('MN', 'Activa', 'Corto Plazo', f.MN_Activa_Corto),
         ('MN', 'Activa', 'Largo Plazo', f.MN_Activa_Largo),
         ('ME', 'Pasiva', 'Ahorro',      f.ME_Pasiva_Ahorro),
@@ -520,8 +520,8 @@ CROSS APPLY (
         ('ME', 'Pasiva', '3 meses',     f.ME_Pasiva_3m),
         ('ME', 'Pasiva', '6 meses',     f.ME_Pasiva_6m),
         ('ME', 'Pasiva', '9 meses',     f.ME_Pasiva_9m),
-        ('ME', 'Pasiva', '1 año',       f.ME_Pasiva_1y),
-        ('ME', 'Pasiva', 'Más de 1 año',f.me_pasiva_mas1y),
+        ('ME', 'Pasiva', '1 aÃ±o',       f.ME_Pasiva_1y),
+        ('ME', 'Pasiva', 'MÃ¡s de 1 aÃ±o',f.me_pasiva_mas1y),
         ('ME', 'Activa', 'Corto Plazo', f.ME_Activa_Corto),
         ('ME', 'Activa', 'Largo Plazo', f.ME_Activa_Largo)
 ) AS v(moneda, tipo_tasa, plazo, tasa_string)
@@ -537,14 +537,14 @@ SELECT * FROM staging_tasas_bcn
 TRUNCATE TABLE Tasas_Interes_BCN;
 GO
 
--- Inicia el ETL con la lógica corregida
+-- Inicia el ETL con la lÃ³gica corregida
 ;WITH Estacion_1_Categorizacion AS (
     SELECT 
         RowID,
-        -- Lógica corregida: Si es un número, es el Año
+        -- LÃ³gica corregida: Si es un nÃºmero, es el AÃ±o
         CASE WHEN ISNUMERIC(TRIM(Fecha)) = 1 THEN TRIM(Fecha) ELSE NULL END AS Anio_Detectado,
         
-        -- Lógica corregida: Si NO es un número, es el Mes (o texto como "Promedio")
+        -- LÃ³gica corregida: Si NO es un nÃºmero, es el Mes (o texto como "Promedio")
         CASE WHEN ISNUMERIC(TRIM(Fecha)) = 0 THEN TRIM(Fecha) ELSE NULL END AS Mes_Detectado,
         
         MN_Pasiva_Ahorro, MN_Pasiva_1m, MN_Pasiva_3m, MN_Pasiva_6m, MN_Pasiva_9m, mn_pasiva_1y, MN_Pasiva_Mas1y,
@@ -583,8 +583,8 @@ CROSS APPLY (
         ('MN', 'Pasiva', '3 meses',     f.MN_Pasiva_3m),
         ('MN', 'Pasiva', '6 meses',     f.MN_Pasiva_6m),
         ('MN', 'Pasiva', '9 meses',     f.MN_Pasiva_9m),
-        ('MN', 'Pasiva', '1 año',       f.mn_pasiva_1y),
-        ('MN', 'Pasiva', 'Más de 1 año',f.MN_Pasiva_Mas1y),
+        ('MN', 'Pasiva', '1 aÃ±o',       f.mn_pasiva_1y),
+        ('MN', 'Pasiva', 'MÃ¡s de 1 aÃ±o',f.MN_Pasiva_Mas1y),
         ('MN', 'Activa', 'Corto Plazo', f.MN_Activa_Corto),
         ('MN', 'Activa', 'Largo Plazo', f.MN_Activa_Largo),
         ('ME', 'Pasiva', 'Ahorro',      f.ME_Pasiva_Ahorro),
@@ -592,8 +592,8 @@ CROSS APPLY (
         ('ME', 'Pasiva', '3 meses',     f.ME_Pasiva_3m),
         ('ME', 'Pasiva', '6 meses',     f.ME_Pasiva_6m),
         ('ME', 'Pasiva', '9 meses',     f.ME_Pasiva_9m),
-        ('ME', 'Pasiva', '1 año',       f.ME_Pasiva_1y),
-        ('ME', 'Pasiva', 'Más de 1 año',f.me_pasiva_mas1y),
+        ('ME', 'Pasiva', '1 aÃ±o',       f.ME_Pasiva_1y),
+        ('ME', 'Pasiva', 'MÃ¡s de 1 aÃ±o',f.me_pasiva_mas1y),
         ('ME', 'Activa', 'Corto Plazo', f.ME_Activa_Corto),
         ('ME', 'Activa', 'Largo Plazo', f.ME_Activa_Largo)
 ) AS v(moneda, tipo_tasa, plazo, tasa_string)
@@ -608,7 +608,7 @@ CREATE TABLE Tasas_Interes_BCN (
     Fecha DATE,
     Moneda NVARCHAR(10),
     Tipo_Tasa NVARCHAR(20),
-    Instrumento NVARCHAR(50),  -- ¡Aquí entra la nueva columna en su lugar lógico!
+    Instrumento NVARCHAR(50),  -- Â¡AquÃ­ entra la nueva columna en su lugar lÃ³gico!
     Plazo NVARCHAR(50),
     Tasa_Porcentaje FLOAT
 );
@@ -620,14 +620,14 @@ GO
 ;WITH Estacion_1_Categorizacion AS (
     SELECT 
         RowID,
-        -- DEFENSA DE AÑO: Extraemos solo los 4 primeros caracteres y vemos si son un número
+        -- DEFENSA DE AÃ‘O: Extraemos solo los 4 primeros caracteres y vemos si son un nÃºmero
         CASE 
             WHEN LEN(TRIM(Fecha)) >= 4 AND ISNUMERIC(LEFT(TRIM(Fecha), 4)) = 1 
             THEN LEFT(TRIM(Fecha), 4) 
             ELSE NULL 
         END AS Anio_Detectado,
         
-        -- DEFENSA DE MES: Si los primeros 4 NO son números, entonces es texto (Mes)
+        -- DEFENSA DE MES: Si los primeros 4 NO son nÃºmeros, entonces es texto (Mes)
         CASE 
             WHEN LEN(TRIM(Fecha)) >= 4 AND ISNUMERIC(LEFT(TRIM(Fecha), 4)) = 0 
             THEN TRIM(Fecha) 
@@ -674,24 +674,24 @@ SELECT
 FROM Estacion_4_Limpieza_Y_Fechas f
 CROSS APPLY (
     VALUES 
-        ('MN', 'Pasiva', 'Depósitos de ahorro',           'Sin plazo fijo',   f.MN_Pasiva_Ahorro),
-        ('MN', 'Pasiva', 'Depósitos a Plazo', '1 mes',        f.MN_Pasiva_1m),
-        ('MN', 'Pasiva', 'Depósitos a Plazo', '3 meses',      f.MN_Pasiva_3m),
-        ('MN', 'Pasiva', 'Depósitos a Plazo', '6 meses',      f.MN_Pasiva_6m),
-        ('MN', 'Pasiva', 'Depósitos a Plazo', '9 meses',      f.MN_Pasiva_9m),
-        ('MN', 'Pasiva', 'Depósitos a Plazo', '1 año',        f.mn_pasiva_1y),
-        ('MN', 'Pasiva', 'Depósitos a Plazo', 'Más de 1 año', f.MN_Pasiva_Mas1y),
-        ('MN', 'Activa', 'Préstamo',         'Corto Plazo',  f.MN_Activa_Corto),
-        ('MN', 'Activa', 'Préstamo',         'Largo Plazo',  f.MN_Activa_Largo),
-        ('ME', 'Pasiva', 'Depósitos de ahorro',           'Sin plazo fijo',   f.ME_Pasiva_Ahorro),
-        ('ME', 'Pasiva', 'Depósitos a Plazo', '1 mes',        f.ME_Pasiva_1m),
-        ('ME', 'Pasiva', 'Depósitos a Plazo', '3 meses',      f.ME_Pasiva_3m),
-        ('ME', 'Pasiva', 'Depósitos a Plazo', '6 meses',      f.ME_Pasiva_6m),
-        ('ME', 'Pasiva', 'Depósitos a Plazo', '9 meses',      f.ME_Pasiva_9m),
-        ('ME', 'Pasiva', 'Depósitos a Plazo', '1 año',        f.ME_Pasiva_1y),
-        ('ME', 'Pasiva', 'Depósitos a Plazo', 'Más de 1 año', f.me_pasiva_mas1y),
-        ('ME', 'Activa', 'Préstamo',         'Corto Plazo',  f.ME_Activa_Corto),
-        ('ME', 'Activa', 'Préstamo',         'Largo Plazo',  f.ME_Activa_Largo)
+        ('MN', 'Pasiva', 'DepÃ³sitos de ahorro',           'Sin plazo fijo',   f.MN_Pasiva_Ahorro),
+        ('MN', 'Pasiva', 'DepÃ³sitos a Plazo', '1 mes',        f.MN_Pasiva_1m),
+        ('MN', 'Pasiva', 'DepÃ³sitos a Plazo', '3 meses',      f.MN_Pasiva_3m),
+        ('MN', 'Pasiva', 'DepÃ³sitos a Plazo', '6 meses',      f.MN_Pasiva_6m),
+        ('MN', 'Pasiva', 'DepÃ³sitos a Plazo', '9 meses',      f.MN_Pasiva_9m),
+        ('MN', 'Pasiva', 'DepÃ³sitos a Plazo', '1 aÃ±o',        f.mn_pasiva_1y),
+        ('MN', 'Pasiva', 'DepÃ³sitos a Plazo', 'MÃ¡s de 1 aÃ±o', f.MN_Pasiva_Mas1y),
+        ('MN', 'Activa', 'PrÃ©stamo',         'Corto Plazo',  f.MN_Activa_Corto),
+        ('MN', 'Activa', 'PrÃ©stamo',         'Largo Plazo',  f.MN_Activa_Largo),
+        ('ME', 'Pasiva', 'DepÃ³sitos de ahorro',           'Sin plazo fijo',   f.ME_Pasiva_Ahorro),
+        ('ME', 'Pasiva', 'DepÃ³sitos a Plazo', '1 mes',        f.ME_Pasiva_1m),
+        ('ME', 'Pasiva', 'DepÃ³sitos a Plazo', '3 meses',      f.ME_Pasiva_3m),
+        ('ME', 'Pasiva', 'DepÃ³sitos a Plazo', '6 meses',      f.ME_Pasiva_6m),
+        ('ME', 'Pasiva', 'DepÃ³sitos a Plazo', '9 meses',      f.ME_Pasiva_9m),
+        ('ME', 'Pasiva', 'DepÃ³sitos a Plazo', '1 aÃ±o',        f.ME_Pasiva_1y),
+        ('ME', 'Pasiva', 'DepÃ³sitos a Plazo', 'MÃ¡s de 1 aÃ±o', f.me_pasiva_mas1y),
+        ('ME', 'Activa', 'PrÃ©stamo',         'Corto Plazo',  f.ME_Activa_Corto),
+        ('ME', 'Activa', 'PrÃ©stamo',         'Largo Plazo',  f.ME_Activa_Largo)
 ) AS v(moneda, tipo_tasa, instrumento, plazo, tasa_string)
 WHERE v.tasa_string IS NOT NULL AND TRIM(v.tasa_string) <> '' AND TRIM(v.tasa_string) <> '-';
 
@@ -807,7 +807,7 @@ FROM Tasas_Interes_BCN
 
 CREATE TABLE staging_agg_monetarios (
     RowID        INT IDENTITY(1,1) NOT NULL,  -- identificador de fila, se genera solo
-    anio_mes     VARCHAR(50)  NULL,           -- "Enero", "2002", vacío, "Fuente:", etc.
+    anio_mes     VARCHAR(50)  NULL,           -- "Enero", "2002", vacÃ­o, "Fuente:", etc.
     base_mon     VARCHAR(50)  NULL,           -- Base Monetaria como texto
     m1           VARCHAR(50)  NULL,           -- M1
     dep_spnf     VARCHAR(50)  NULL,           -- componente intermedio, no nos interesa
@@ -820,7 +820,7 @@ CREATE TABLE staging_agg_monetarios (
     dep_nores    VARCHAR(50)  NULL,           -- componente intermedio
 	m3           VARCHAR(50)  NULL,           -- M3 
     m3a          VARCHAR(50)  NULL            -- M3A
-    -- las columnas vacías del final las ignoramos
+    -- las columnas vacÃ­as del final las ignoramos
 );
 
 
@@ -829,24 +829,24 @@ FROM 'C:\Users\alvar\OneDrive\Documentos\Recursos Proyecto Macro\stagingaggmonet
 WITH (
     FIRSTROW = 1,          -- salta los 6 metadatos del inicio
     FIELDTERMINATOR = ';', -- delimitador punto y coma
-    ROWTERMINATOR = '\n',  -- salto de línea Linux
+    ROWTERMINATOR = '\n',  -- salto de lÃ­nea Linux
     CODEPAGE = '1252'      -- Windows Western European / Latin-1
 );
 
--- No funcionó. Se procede a insertar con el wizard -- 
+-- No funcionÃ³. Se procede a insertar con el wizard -- 
 
--- Estación 1: Categorización entre mes y año --
+-- EstaciÃ³n 1: CategorizaciÃ³n entre mes y aÃ±o --
 WITH Estacion_1_Categorizacion AS (
     SELECT 
         RowID,
-        -- DEFENSA DE AÑO: Extraemos solo los 4 primeros caracteres y vemos si son un número
+        -- DEFENSA DE AÃ‘O: Extraemos solo los 4 primeros caracteres y vemos si son un nÃºmero
         CASE 
             WHEN LEN(TRIM(Fecha)) >= 4 AND ISNUMERIC(LEFT(TRIM(Fecha), 4)) = 1 
             THEN LEFT(TRIM(Fecha), 4) 
             ELSE NULL 
         END AS Anio_Detectado,
         
-        -- DEFENSA DE MES: Si los primeros 4 NO son números, entonces es texto (Mes)
+        -- DEFENSA DE MES: Si los primeros 4 NO son nÃºmeros, entonces es texto (Mes)
         CASE 
             WHEN LEN(TRIM(Fecha)) >= 4 AND ISNUMERIC(LEFT(TRIM(Fecha), 4)) = 0 
             THEN TRIM(Fecha) 
@@ -893,24 +893,24 @@ SELECT
 FROM Estacion_4_Limpieza_Y_Fechas f
 CROSS APPLY (
     VALUES 
-        ('MN', 'Pasiva', 'Depósitos de ahorro',           'Sin plazo fijo',   f.MN_Pasiva_Ahorro),
-        ('MN', 'Pasiva', 'Depósitos a Plazo', '1 mes',        f.MN_Pasiva_1m),
-        ('MN', 'Pasiva', 'Depósitos a Plazo', '3 meses',      f.MN_Pasiva_3m),
-        ('MN', 'Pasiva', 'Depósitos a Plazo', '6 meses',      f.MN_Pasiva_6m),
-        ('MN', 'Pasiva', 'Depósitos a Plazo', '9 meses',      f.MN_Pasiva_9m),
-        ('MN', 'Pasiva', 'Depósitos a Plazo', '1 año',        f.mn_pasiva_1y),
-        ('MN', 'Pasiva', 'Depósitos a Plazo', 'Más de 1 año', f.MN_Pasiva_Mas1y),
-        ('MN', 'Activa', 'Préstamo',         'Corto Plazo',  f.MN_Activa_Corto),
-        ('MN', 'Activa', 'Préstamo',         'Largo Plazo',  f.MN_Activa_Largo),
-        ('ME', 'Pasiva', 'Depósitos de ahorro',           'Sin plazo fijo',   f.ME_Pasiva_Ahorro),
-        ('ME', 'Pasiva', 'Depósitos a Plazo', '1 mes',        f.ME_Pasiva_1m),
-        ('ME', 'Pasiva', 'Depósitos a Plazo', '3 meses',      f.ME_Pasiva_3m),
-        ('ME', 'Pasiva', 'Depósitos a Plazo', '6 meses',      f.ME_Pasiva_6m),
-        ('ME', 'Pasiva', 'Depósitos a Plazo', '9 meses',      f.ME_Pasiva_9m),
-        ('ME', 'Pasiva', 'Depósitos a Plazo', '1 año',        f.ME_Pasiva_1y),
-        ('ME', 'Pasiva', 'Depósitos a Plazo', 'Más de 1 año', f.me_pasiva_mas1y),
-        ('ME', 'Activa', 'Préstamo',         'Corto Plazo',  f.ME_Activa_Corto),
-        ('ME', 'Activa', 'Préstamo',         'Largo Plazo',  f.ME_Activa_Largo)
+        ('MN', 'Pasiva', 'DepÃ³sitos de ahorro',           'Sin plazo fijo',   f.MN_Pasiva_Ahorro),
+        ('MN', 'Pasiva', 'DepÃ³sitos a Plazo', '1 mes',        f.MN_Pasiva_1m),
+        ('MN', 'Pasiva', 'DepÃ³sitos a Plazo', '3 meses',      f.MN_Pasiva_3m),
+        ('MN', 'Pasiva', 'DepÃ³sitos a Plazo', '6 meses',      f.MN_Pasiva_6m),
+        ('MN', 'Pasiva', 'DepÃ³sitos a Plazo', '9 meses',      f.MN_Pasiva_9m),
+        ('MN', 'Pasiva', 'DepÃ³sitos a Plazo', '1 aÃ±o',        f.mn_pasiva_1y),
+        ('MN', 'Pasiva', 'DepÃ³sitos a Plazo', 'MÃ¡s de 1 aÃ±o', f.MN_Pasiva_Mas1y),
+        ('MN', 'Activa', 'PrÃ©stamo',         'Corto Plazo',  f.MN_Activa_Corto),
+        ('MN', 'Activa', 'PrÃ©stamo',         'Largo Plazo',  f.MN_Activa_Largo),
+        ('ME', 'Pasiva', 'DepÃ³sitos de ahorro',           'Sin plazo fijo',   f.ME_Pasiva_Ahorro),
+        ('ME', 'Pasiva', 'DepÃ³sitos a Plazo', '1 mes',        f.ME_Pasiva_1m),
+        ('ME', 'Pasiva', 'DepÃ³sitos a Plazo', '3 meses',      f.ME_Pasiva_3m),
+        ('ME', 'Pasiva', 'DepÃ³sitos a Plazo', '6 meses',      f.ME_Pasiva_6m),
+        ('ME', 'Pasiva', 'DepÃ³sitos a Plazo', '9 meses',      f.ME_Pasiva_9m),
+        ('ME', 'Pasiva', 'DepÃ³sitos a Plazo', '1 aÃ±o',        f.ME_Pasiva_1y),
+        ('ME', 'Pasiva', 'DepÃ³sitos a Plazo', 'MÃ¡s de 1 aÃ±o', f.me_pasiva_mas1y),
+        ('ME', 'Activa', 'PrÃ©stamo',         'Corto Plazo',  f.ME_Activa_Corto),
+        ('ME', 'Activa', 'PrÃ©stamo',         'Largo Plazo',  f.ME_Activa_Largo)
 ) AS v(moneda, tipo_tasa, instrumento, plazo, tasa_string)
 WHERE v.tasa_string IS NOT NULL AND TRIM(v.tasa_string) <> '' AND TRIM(v.tasa_string) <> '-';
 
@@ -918,7 +918,7 @@ WHERE v.tasa_string IS NOT NULL AND TRIM(v.tasa_string) <> '' AND TRIM(v.tasa_st
 WITH estacion_1_categorizacion AS (
 SELECT
    RowID,
-   -- Aplicar defensa para los años -- 
+   -- Aplicar defensa para los aÃ±os -- 
 CASE 
    WHEN LEN(TRIM(anio_mes)) >= 4 AND ISNUMERIC(LEFT(TRIM(anio_mes), 4)) = 1
    THEN LEFT(TRIM(anio_mes), 4)
@@ -966,49 +966,49 @@ estacion_5_columnas_limpias AS (
 SELECT 
 -- construimos fechas con valores ya calculados 
     DATEFROMPARTS(CAST(anio_real AS INT), numero_mes, 1)  AS fecha, 
-	 -- Función de limpieza numérica reutilizable para cada columna:
+	 -- FunciÃ³n de limpieza numÃ©rica reutilizable para cada columna:
         -- Paso 1: TRIM elimina espacios al inicio y final
         -- Paso 2: REPLACE quita la coma de miles (4,235.40 ? 4235.40)
-        -- Paso 3: REPLACE quita paréntesis de negativos
+        -- Paso 3: REPLACE quita parÃ©ntesis de negativos
         -- Paso 4: CAST convierte el texto limpio a decimal
         -- Paso 5: el CASE detecta si era negativo y multiplica por -1
 		CASE 
-		   WHEN  TRIM(base_mon) LIKE '(%)'  --Manera de denotar valores negativos entre paréntesis
+		   WHEN  TRIM(base_mon) LIKE '(%)'  --Manera de denotar valores negativos entre parÃ©ntesis
            THEN -1 * TRY_CAST(REPLACE(REPLACE(REPLACE(TRIM(base_mon),',',''),'(',''),')','') AS DECIMAL(18,4))
            ELSE TRY_CAST(REPLACE(REPLACE(TRIM(base_mon), ',', ''), ' ', '') AS DECIMAL(18,4))
    END AS base_monetaria,
         CASE 
-		   WHEN  TRIM(m1) LIKE '(%)'  --Manera de denotar valores negativos entre paréntesis
+		   WHEN  TRIM(m1) LIKE '(%)'  --Manera de denotar valores negativos entre parÃ©ntesis
            THEN -1 * TRY_CAST(REPLACE(REPLACE(REPLACE(TRIM(m1),',',''),'(',''),')','') AS DECIMAL(18,4))
            ELSE TRY_CAST(REPLACE(REPLACE(TRIM(m1), ',', ''), ' ', '') AS DECIMAL(18,4))
    END AS M1,
          CASE 
-		   WHEN  TRIM(m1a) LIKE '(%)'  --Manera de denotar valores negativos entre paréntesis
+		   WHEN  TRIM(m1a) LIKE '(%)'  --Manera de denotar valores negativos entre parÃ©ntesis
            THEN -1 * TRY_CAST(REPLACE(REPLACE(REPLACE(TRIM(m1a),',',''),'(',''),')','') AS DECIMAL(18,4))
            ELSE TRY_CAST(REPLACE(REPLACE(TRIM(m1a), ',', ''), ' ', '') AS DECIMAL(18,4))
    END AS M1A,
           CASE 
-		   WHEN  TRIM(m2) LIKE '(%)'  --Manera de denotar valores negativos entre paréntesis
+		   WHEN  TRIM(m2) LIKE '(%)'  --Manera de denotar valores negativos entre parÃ©ntesis
            THEN -1 * CAST(REPLACE(REPLACE(REPLACE(TRIM(m2),',',''),'(',''),')','') AS DECIMAL(18,4))
            ELSE CAST(REPLACE(REPLACE(TRIM(m2), ',', ''), ' ', '') AS DECIMAL(18,4))
    END AS M2,
           CASE 
-		   WHEN  TRIM(m2a) LIKE '(%)'  --Manera de denotar valores negativos entre paréntesis
+		   WHEN  TRIM(m2a) LIKE '(%)'  --Manera de denotar valores negativos entre parÃ©ntesis
            THEN -1 * TRY_CAST(REPLACE(REPLACE(REPLACE(TRIM(m2a),',',''),'(',''),')','') AS DECIMAL(18,4))
            ELSE TRY_CAST(REPLACE(REPLACE(TRIM(m2a), ',', ''), ' ', '') AS DECIMAL(18,4))
    END AS M2A,
            CASE 
-		   WHEN  TRIM(m3) LIKE '(%)'  --Manera de denotar valores negativos entre paréntesis
+		   WHEN  TRIM(m3) LIKE '(%)'  --Manera de denotar valores negativos entre parÃ©ntesis
            THEN -1 * TRY_CAST(REPLACE(REPLACE(REPLACE(TRIM(m3),',',''),'(',''),')','') AS DECIMAL(18,4))
            ELSE TRY_CAST(REPLACE(REPLACE(TRIM(m3), ',', ''), ' ', '') AS DECIMAL(18,4))
    END AS M3,
            CASE 
-		   WHEN  TRIM(m3a) LIKE '(%)'  --Manera de denotar valores negativos entre paréntesis
+		   WHEN  TRIM(m3a) LIKE '(%)'  --Manera de denotar valores negativos entre parÃ©ntesis
            THEN -1 * TRY_CAST(REPLACE(REPLACE(REPLACE(TRIM(m3a),',',''),'(',''),')','') AS DECIMAL(18,4))
            ELSE TRY_CAST(REPLACE(REPLACE(TRIM(m3a), ',', ''), ' ', '') AS DECIMAL(18,4))
    END AS M3A
    FROM estacion_4_limpieza_y_fechas
-    -- Filtramos filas sin número de mes válido (años, vacías, metadatos del final)
+    -- Filtramos filas sin nÃºmero de mes vÃ¡lido (aÃ±os, vacÃ­as, metadatos del final)
     WHERE numero_mes IS NOT NULL
 )
 /*Se procede con el insert en la tabla BM previamente modificada */
@@ -1032,22 +1032,22 @@ FROM BM
 
 
 
-   -- Después de crear el staging y hacer BULK INSERT, ejecutá esto
+   -- DespuÃ©s de crear el staging y hacer BULK INSERT, ejecutÃ¡ esto
 SELECT TOP 20 RowID, anio_mes, base_mon, m1, m1a, m2, m2a, m3, m3a
 FROM staging_agg_monetarios
 ORDER BY RowID;
 
 SELECT * 
 FROM Tasas_Interes_BCN
-/*Procedemos con la creación de view relacionada al ratio de dolarización */
+/*Procedemos con la creaciÃ³n de view relacionada al ratio de dolarizaciÃ³n */
 CREATE VIEW vw_exposicion_externa AS
 SELECT
     b.fecha,
 	b.m2a,
 	b.m3a,
-    -- Monto absoluto en ME: depósitos fuera de M2 dentro de M3
+    -- Monto absoluto en ME: depÃ³sitos fuera de M2 dentro de M3
 	(b.M3a - b.M2a) AS depositos_no_residentes,
-    -- Ratio de dolarización con protección doble contra NULL y cero
+    -- Ratio de dolarizaciÃ³n con protecciÃ³n doble contra NULL y cero
 	CAST((M3a - M2a) / NULLIF(M3a, 0) AS DECIMAL(18,4)) AS ratio_exposicion_externa,
 	CAST((M3a - M2a) * 100 / NULLIF(M3a, 0) AS DECIMAL(18,4)) AS ratio_exposicion_externa_pct
 FROM BM b
@@ -1067,7 +1067,7 @@ SELECT
    b.fecha, 
    b.M2,
    b.M2A,
-  -- Usamos M2A - M2 para un SPNF más limpio según fuente 4-15
+  -- Usamos M2A - M2 para un SPNF mÃ¡s limpio segÃºn fuente 4-15
    b.M2A - b.M2 AS liquidez_spnf,
    c.credito,
 -- Peso del estado en la liquidez total (M3A)
@@ -1080,9 +1080,9 @@ variaciones_interanuales AS (
 SELECT
     fecha, 
 	peso_estado,
---Calculamos la variación interanual del crédito --
+--Calculamos la variaciÃ³n interanual del crÃ©dito --
 	((credito - LAG(credito, 12) OVER (ORDER BY fecha)) / NULLIF(LAG(credito, 12) OVER (ORDER BY fecha), 0)) * 100 AS var_inter_credito,
--- Calculamos la variación interanual de la liquidez del spnf --
+-- Calculamos la variaciÃ³n interanual de la liquidez del spnf --
     ((liquidez_spnf - LAG(liquidez_spnf, 12) OVER (ORDER BY fecha)) / NULLIF(LAG(liquidez_spnf, 12) OVER (ORDER BY fecha), 0)) * 100 AS var_inter_spnf
 FROM calculo_base
 )
@@ -1095,7 +1095,7 @@ FROM variaciones_interanuales
 WHERE var_inter_spnf IS NOT NULL 
 AND var_inter_credito IS NOT NULL;
 /* En la view anterior la VAR interanual de credito se corta debido al IS NOT NULL, al hacer el calculo de la VAR INT del SPNF. 
-Se creará una medida con los valores completos en Power BI */
+Se crearÃ¡ una medida con los valores completos en Power BI */
 
 )
 SELECT * 
@@ -1107,7 +1107,7 @@ ORDER BY fecha ASC;
 ALTER VIEW vw_cobertura_res_agregados_monetarios AS
 WITH conversion_RIN AS (
 SELECT 
---Iniciamos convirtiendo las RIN a córdobas según el TC del mes --
+--Iniciamos convirtiendo las RIN a cÃ³rdobas segÃºn el TC del mes --
 r.fecha,
 r.rin AS RIN_USD,
 r.rin * t.tc AS conv_RIN_cor
@@ -1137,7 +1137,7 @@ fecha,
 cobertura_rin_BM,
 ((cobertura_rin_BM - LAG(cobertura_rin_BM, 12) OVER (ORDER BY fecha)) / NULLIF(LAG(cobertura_rin_BM, 12) OVER (ORDER BY fecha), 0)) * 100 AS var_int_cobertura_rin_BM,
 cobertura_rin_m1,
---Se aplica un LAG para obtener la variación interanual de cada mes --
+--Se aplica un LAG para obtener la variaciÃ³n interanual de cada mes --
 ((cobertura_rin_m1 - LAG(cobertura_rin_m1, 12) OVER (ORDER BY fecha)) / NULLIF(LAG(cobertura_rin_m1, 12) OVER (ORDER BY fecha), 0)) * 100 AS var_int_cobertura_rin_m1,
 cobertura_rin_m1a,
 ((cobertura_rin_m1a - LAG(cobertura_rin_m1a, 12) OVER (ORDER BY fecha)) / NULLIF(LAG(cobertura_rin_m1a, 12) OVER (ORDER BY fecha), 0)) * 100 AS var_int_cobertura_rin_m1a,
@@ -1240,7 +1240,7 @@ AND tasa_real_ME IS NOT NULL;
 
 
 
---Se procede a crear una nueva columna en tabla IPC para tener inflación interanual con decimales mas precisos--
+--Se procede a crear una nueva columna en tabla IPC para tener inflaciÃ³n interanual con decimales mas precisos--
 ALTER TABLE IPC
 ADD inflacion_calculada DECIMAL(18, 6)
 
@@ -1250,7 +1250,7 @@ SET inflacion_calculada = COALESCE(, inflacion_interanual);
 WITH CTE_Calculo AS (
     SELECT 
         fecha,
-        -- Realizamos la aritmética directamente aquí
+        -- Realizamos la aritmÃ©tica directamente aquÃ­
         ((IPC - LAG(IPC, 12) OVER(ORDER BY fecha)) / NULLIF(LAG(IPC, 12) OVER(ORDER BY fecha), 0) * 100) AS calculada_temp,
         inflacion_interanual AS oficial_original
     FROM IPC
@@ -1276,7 +1276,7 @@ order by FECHA
 DELETE FROM tasa_interbancaria
 WHERE Fecha = '1899-12-30';
 
-/*se ´procede a crear una columna en formato decimal de la var int del IMAE */
+/*se Â´procede a crear una columna en formato decimal de la var int del IMAE */
 
 SELECT 
      fecha,
@@ -1295,7 +1295,7 @@ SELECT *
 FROM RIN
 
 
--- Se procede a agregar columna con las RIN en córdobas a la tabla física -- 
+-- Se procede a agregar columna con las RIN en cÃ³rdobas a la tabla fÃ­sica -- 
 ALTER TABLE dbo.RIN
 ADD RIN_NIO decimal(14,6) NULL;
 
@@ -1313,7 +1313,7 @@ SELECT *
 FROM vw_cobertura_res_agregados_monetarios
 ORDER BY fecha desc
 
--- Protegemos fecha de la tabla BM para el proceso de creación de procedimiento almacenado para actualizar datos --
+-- Protegemos fecha de la tabla BM para el proceso de creaciÃ³n de procedimiento almacenado para actualizar datos --
 
 ALTER TABLE BM
 ADD CONSTRAINT UQ_BM_Fecha UNIQUE (fecha);
@@ -1345,8 +1345,8 @@ CREATE TABLE dbo.staging_agg_monetarios (
 
 DROP PROCEDURE IF EXISTS 
 
-/* Se indentificó que el valor faltante de OCT 2025 en la tabla de CPI_USA causa conflicto en la aplicación de LAG(12),
-Se procede a alterar la view de inflación en donde se transforma para corregir valores posteriores */
+/* Se indentificÃ³ que el valor faltante de OCT 2025 en la tabla de CPI_USA causa conflicto en la aplicaciÃ³n de LAG(12),
+Se procede a alterar la view de inflaciÃ³n en donde se transforma para corregir valores posteriores */
 
 CREATE OR ALTER VIEW vw_inflacion_usa AS
  -- Paso 1:
@@ -1356,7 +1356,7 @@ SELECT MIN(fecha) AS min_f, MAX(fecha) AS max_f
 FROM CPI_USA
 ),
 calendario AS (
--- se procede a crear una serie mensual completa aún con posibles huecos
+-- se procede a crear una serie mensual completa aÃºn con posibles huecos
 SELECT 
     min_f AS fecha FROM min_max
 	UNION ALL
@@ -1366,7 +1366,7 @@ FROM calendario
 WHERE fecha < (SELECT max_f FROM min_max)
 ), 
 datos_completos AS (
--- amarramos la nueva serie mensual con los datos de CPI de la tabla física
+-- amarramos la nueva serie mensual con los datos de CPI de la tabla fÃ­sica
 SELECT
    c.fecha,
    t.cpi_usa
@@ -1374,8 +1374,8 @@ FROM calendario c
 LEFT JOIN CPI_USA t ON  c.fecha = t.fecha
 ),
 calculo AS (
--- calculamos el valor del cpi del año anterior para cada mes
--- notese la diferencia metodológica, en la creación de la view se calculaba la inflación directamente --
+-- calculamos el valor del cpi del aÃ±o anterior para cada mes
+-- notese la diferencia metodolÃ³gica, en la creaciÃ³n de la view se calculaba la inflaciÃ³n directamente --
 SELECT
     fecha,
 	cpi_usa,
@@ -1383,7 +1383,7 @@ SELECT
 FROM datos_completos
 )
 SELECT 
--- se procede a calcular el valor de la inflación int. Aquí el LAG ignora el hueco de oct 2025
+-- se procede a calcular el valor de la inflaciÃ³n int. AquÃ­ el LAG ignora el hueco de oct 2025
     fecha,
 	cpi_usa,
 	(cpi_usa - cpi_usa_anio_anterior) / cpi_usa_anio_anterior * 100 AS inflacion_interanual_usa2
@@ -1393,7 +1393,7 @@ WHERE cpi_usa IS NOT NULL
   -- eliminamos el limite de iteraciones del CTE --
 OPTION (MAXRECURSION 0);
 
-/* no se pudo utilizar este método, se aplica alternativa para modificar la view*/ 
+/* no se pudo utilizar este mÃ©todo, se aplica alternativa para modificar la view*/ 
 CREATE OR ALTER VIEW dbo.vw_inflacion_usa AS
 WITH calculo AS (
     SELECT
@@ -1402,12 +1402,12 @@ WITH calculo AS (
         -- CPI del mes actual
         actual.cpi_usa,
 
-        -- CPI del mismo mes del año anterior
+        -- CPI del mismo mes del aÃ±o anterior
         previo.cpi_usa AS cpi_usa_anio_anterior
 
     FROM dbo.CPI_USA AS actual
 
-    -- Self-join para evitar errores si falta algún mes en la serie
+    -- Self-join para evitar errores si falta algÃºn mes en la serie
     LEFT JOIN dbo.CPI_USA AS previo
         ON previo.fecha = DATEADD(YEAR, -1, actual.fecha)
 
@@ -1420,7 +1420,7 @@ SELECT
     cpi_usa,
     cpi_usa_anio_anterior,
 
-    -- Inflación interanual: variación vs mismo mes del año anterior
+    -- InflaciÃ³n interanual: variaciÃ³n vs mismo mes del aÃ±o anterior
     (
         (cpi_usa - cpi_usa_anio_anterior)
         / NULLIF(cpi_usa_anio_anterior, 0)
@@ -1428,7 +1428,7 @@ SELECT
 
 FROM calculo
 
--- Excluye meses sin dato comparable del año anterior
+-- Excluye meses sin dato comparable del aÃ±o anterior
 WHERE cpi_usa_anio_anterior IS NOT NULL;
 
 SELECT *
@@ -1506,7 +1506,7 @@ SELECT *
 FROM vw_crowding_out_spnf
 ORDER BY fecha DESC;
 
--- Diagnóstico: ¿qué columnas tienen NULL en los meses nuevos?
+-- DiagnÃ³stico: Â¿quÃ© columnas tienen NULL en los meses nuevos?
 SELECT 
     fecha,
     Base_Monetaria,
@@ -1527,11 +1527,11 @@ WITH base_calculada AS (
     SELECT
         b.fecha,
         c.Credito,
-        -- M2A - M2 aísla SPNF sin contaminar con depósitos de no residentes
-        -- Metodología BCN 4-15: el salto de M2 a M2A es exclusivamente SPNF
+        -- M2A - M2 aÃ­sla SPNF sin contaminar con depÃ³sitos de no residentes
+        -- MetodologÃ­a BCN 4-15: el salto de M2 a M2A es exclusivamente SPNF
         (b.M2A - b.M2)                                    AS liquidez_spnf,
         -- Peso del SPNF en la liquidez ampliada total
-        -- Sin CAST limitado — preservamos precisión nativa para uso en DAX
+        -- Sin CAST limitado Â— preservamos precisiÃ³n nativa para uso en DAX
         (b.M2A - b.M2) * 1.0 / NULLIF(b.M3A, 0)          AS peso_estado
     FROM BM b
     INNER JOIN credito c ON b.fecha = c.fecha
@@ -1551,11 +1551,11 @@ con_rezagos AS (
 SELECT
     fecha,
     peso_estado,
-    -- Variación interanual del volumen absoluto de liquidez SPNF
-    -- Positivo = el Estado está expandiendo su liquidez más rápido que el año anterior
+    -- VariaciÃ³n interanual del volumen absoluto de liquidez SPNF
+    -- Positivo = el Estado estÃ¡ expandiendo su liquidez mÃ¡s rÃ¡pido que el aÃ±o anterior
     (liquidez_spnf - liquidez_spnf_ant) 
         / NULLIF(liquidez_spnf_ant, 0) * 100             AS var_inter_spnf,
-    -- Variación interanual del crédito al sector privado
+    -- VariaciÃ³n interanual del crÃ©dito al sector privado
     -- El diferencial entre ambas variaciones define el crowding out
     (Credito - credito_ant) 
         / NULLIF(credito_ant, 0) * 100                   AS var_inter_credito
